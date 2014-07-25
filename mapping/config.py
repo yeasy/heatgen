@@ -61,6 +61,18 @@ middlebox_opts = [
     cfg.StrOpt('egress_cidr',
                default='',
                help=_("egress ip cidr for the middlebox instance")),
+    cfg.StrOpt('ha_mode',
+               default='NONE',
+               help=_("the mode for HA")),
+    cfg.StrOpt('interface_type',
+                choices=['one_arm', 'two_arm'],
+                help=_("the type of interface")),
+    cfg.StrOpt('required',
+               default='no',
+               help=_("whether the middlebox instance is required")),
+    cfg.BoolOpt('health_check',
+               default=False,
+               help=_("whether do the health check")),
 ]
 
 MIDDLEBOXES = ['trans_mb', 'routed_mb']

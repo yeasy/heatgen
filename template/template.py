@@ -18,7 +18,6 @@ class Template(object):
         res_dict = {}
         for e in self.resources:
             res_dict.update(e.get())
-            print e.get()
         self.data = {
             "HeatTemplateFormatVersion": self.version,
             "Description": self.desc,

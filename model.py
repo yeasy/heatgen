@@ -51,22 +51,26 @@ class Model(object):
                 continue
             service_list.add(mb.id)
             self.resources.append(mb)
-        policy = Policy('',self.policy_name,NodeRef(src_id),NodeRef(dst_id),service_list)
+        policy = Policy('policy1',self.policy_name,NodeRef(src_id),NodeRef(
+            dst_id),service_list)
         self.resources.append(policy)
         self.template = Template(resources = self.resources)
         return self.template
 
     def gen_transparent_mb(self, name):
-        id = get_cfg_value(name,'id')
+        id = get_cfg_value(name,'id') or name
         service_type = get_cfg_value(name,'service_type')
         ingress_node = get_cfg_value(name,'ingress_node')
         ingress_port = get_cfg_value(name,'ingress_port')
         egress_node = get_cfg_value(name,'egress_node')
         egress_port = get_cfg_value(name,'egress_port')
-        if ingress_node == egress_node and ingress_port == egress_port:
-            interface_type = 'one_arm'
-        else:
-            interface_type = 'two_arm'
+        interface_type = get_cfg_value(name,'interface_type')
+
+        if not interface_type:
+            if ingress_node == egress_node and ingress_port == egress_port:
+                interface_type = 'one_arm'
+            else:
+                interface_type = 'two_arm'
         return TransparentMiddleBox(id,name,ingress_node,ingress_port,
                                     egress_node,egress_port, interface_type =\
                interface_type)
