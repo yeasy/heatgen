@@ -3,20 +3,22 @@ __author__ = 'baohua'
 import  sys
 
 from oslo.config import cfg
-from mapping import config #noqa
 
+from mapping.openstack import Client
 from model import Model
 
+# --config-dir etc
 if __name__ == "__main__":
     try:
         CONF = cfg.CONF
         CONF(project='heatgen')
-        model = Model(src=CONF.src, dst=CONF.dst, services=['trans_mb',
-                                                          'routed_mb'],
-                      policy_name='policy_test')
+        client = Client()
+        # print client.get_tenant_id_by_name(CONF.PROJECT.tenant_name)
+        model = Model(src=CONF.src, dst=CONF.dst, services=CONF.services,
+                      policy_name=CONF.policy_name)
         template = model.get_template()
         print template.get_json()
-        template.export()
+        template.export('p_trans_routed.json')
     except ValueError as e:
         # Print exception
         type_, val_, trace_ = sys.exc_info()

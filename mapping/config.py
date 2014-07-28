@@ -1,7 +1,25 @@
 __author__ = 'baohua'
 
-from oslo.config import cfg
 from gettext import gettext as _
+
+from oslo.config import cfg
+
+
+default_opts = [
+    cfg.StrOpt('src',
+               default='',
+               help='name of the src endpoint for the policy'),
+    cfg.StrOpt('dst',
+               default='',
+               help='name of the dst endpoint for the policy'),
+    cfg.ListOpt('services',
+                default=[],
+                help='names of the service middleboxes for the policy'),
+    cfg.StrOpt('policy_name',
+               default='p_policy.json',
+               help='name of the exported file for the policy'),
+]
+cfg.CONF.register_opts(default_opts)
 
 auth_opts = [
     cfg.StrOpt('auth_url',
@@ -18,6 +36,7 @@ auth_opts = [
                help='the tenant name to check'),
 ]
 cfg.CONF.register_opts(auth_opts, "AUTH")
+cfg.CONF.register_opts(auth_opts, "PROJECT")
 
 middlebox_opts = [
     cfg.StrOpt('id',
@@ -34,6 +53,10 @@ middlebox_opts = [
     cfg.StrOpt('ingress_node',
                default='',
                help=_("ingress switch dpid for the middlebox instance")),
+    cfg.StrOpt('ingress_ip',
+               default='',
+               help=_("fake field to get port of the transparent middlebox "
+                      "instance")),
     cfg.StrOpt('ingress_port',
                default='1',
                help=_("ingress switch port for the middlebox instance")),
@@ -46,6 +69,10 @@ middlebox_opts = [
     cfg.StrOpt('ingress_cidr',
                default='',
                help=_("ingress ip cidr for the middlebox instance")),
+    cfg.StrOpt('egress_ip',
+               default='',
+               help=_("fake field to get port of the transparent middlebox "
+                      "instance")),
     cfg.StrOpt('egress_node',
                default='',
                help=_("egress switch dpid for the middlebox instance")),
@@ -103,4 +130,4 @@ cli_opts = [
                help='names of the service middleboxes for the policy'),
 ]
 
-cfg.CONF.register_cli_opts(cli_opts)
+# cfg.CONF.register_cli_opts(cli_opts)
