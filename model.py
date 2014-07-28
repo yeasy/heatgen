@@ -24,22 +24,20 @@ class Model(object):
     The basic class to define a template using high level model
     """
 
-    def __init__(self, version="0.1", desc="Example", src="net1", dst="net2",
+    def __init__(self, version="0.1", desc="Example", src_id="1", dst_id="2",
                  services=['trans_mb','routed_mb'], policy_name="testpolicy"):
     #node names
         self.version = version
         self.desc = desc
-        self.src = src
-        self.dst = dst
+        self.src_id = src_id
+        self.dst_id = dst_id
         self.services = services
         self.resources = []
         self.policy_name = policy_name
 
     def get_template(self):
-        src_id = get_cfg_value(self.src,'id')
-        dst_id = get_cfg_value(self.dst,'id')
-        self.resources.append(Net(src_id))
-        self.resources.append(Net(dst_id))
+        self.resources.append(Net(self.src_id))
+        self.resources.append(Net(self.dst_id))
         service_list = ServiceList()
         for e in self.services:
             mb_mode = get_cfg_value(e,'mode')
@@ -51,8 +49,8 @@ class Model(object):
                 continue
             service_list.add(mb.id)
             self.resources.append(mb)
-        policy = Policy('policy1',self.policy_name,NodeRef(src_id),NodeRef(
-            dst_id),service_list)
+        policy = Policy('policy1',self.policy_name,NodeRef(self.src_id),NodeRef(
+            self.dst_id),service_list)
         self.resources.append(policy)
         self.template = Template(resources = self.resources)
         return self.template
@@ -73,7 +71,7 @@ class Model(object):
                 interface_type = 'two_arm'
         return TransparentMiddleBox(id,name,ingress_node,ingress_port,
                                     egress_node,egress_port, interface_type =\
-               interface_type)
+               interface_type,service_type=service_type)
 
     def gen_routed_mb(self, name):
         id = get_cfg_value(name,'id')
@@ -90,4 +88,5 @@ class Model(object):
             interface_type = 'two_arm'
         return RoutedMiddleBox(id, name, ingress_gw_addr, ingress_mac_addr,
                                ingress_cidr, egress_gw_addr, egress_mac_addr,
-                               egress_cidr, interface_type = interface_type)
+                               egress_cidr, interface_type = interface_type,
+                               service_type=service_type)
