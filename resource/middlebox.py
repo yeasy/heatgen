@@ -12,9 +12,9 @@ class MiddleBox(Resource):
 
     def __init__(self,id,type="OS::Neutron::connectivity::service", name="trans_mb",
                  interface_type="two_arm", service_type="firewall", ha_mode="NONE",required="yes",
-                 mode="transparent",**kwargs):
+                 mode="transparent",health_check="false",**kwargs):
         super(MiddleBox,self).__init__(id,type,name=name, interface_type=interface_type, service_type=service_type,
-                                       ha_mode=ha_mode,required=required, mode=mode, **kwargs)
+                                       ha_mode=ha_mode,required=required, mode=mode,health_check="false", **kwargs)
 
 
 
@@ -29,14 +29,15 @@ class TransparentMiddleBox(MiddleBox):
     """
     def __init__(self, id, name, ingress_node,ingress_port,egress_node,egress_port,
                  type="OS::Neutron::connectivity::service", interface_type="two_arm", service_type="ips",
-                 ha_mode="NONE",required="yes"):
+                 ha_mode="NONE",required="yes",health_check="false"):
         super(TransparentMiddleBox,self).__init__(id, type, name=name, interface_type=interface_type,
                                                   ingress_node=ingress_node, service_type=service_type,
                                                   ha_mode=ha_mode,
                                                   required=required,
-                                                  mode='transparent',
                                                   ingress_port=ingress_port, egress_node=egress_node,
-                                                  egress_port=egress_port)
+                                                  egress_port=egress_port,
+                                                  health_check=health_check,
+                                                  mode='transparent')
 
 
 
@@ -51,15 +52,16 @@ class RoutedMiddleBox(MiddleBox):
     def __init__(self, id, name, ingress_gw_addr, ingress_mac_addr, ingress_cidr, egress_gw_addr,
                  egress_mac_addr, egress_cidr,
                  type="OS::Neutron::connectivity::service", interface_type="two_arm", service_type="firewall",
-                 ha_mode="NONE",required="yes"):
+                 ha_mode="NONE",required="yes",health_check="false"):
         super(RoutedMiddleBox,self).__init__(id, type, name=name, ingress_gw_addr=ingress_gw_addr,
                                              ingress_mac_addr=ingress_mac_addr, ingress_cidr=ingress_cidr,
                                              egress_gw_addr=egress_gw_addr, egress_mac_addr=egress_mac_addr,
                                              egress_cidr=egress_cidr, interface_type=interface_type,
                                              service_type=service_type,
                                              ha_mode=ha_mode,
-                                             required=required, mode='routed'
-                                                  )
+                                             required=required,
+                                             health_check=health_check,
+                                             mode='routed' )
 
 
 
