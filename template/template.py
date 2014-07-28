@@ -28,11 +28,11 @@ class Template(object):
     def get_json(self):
         return json.dumps(self.get())
 
-    def export(self):
+    def export(self, export_file=None):
         '''
         Export the template into outside json file.
         :return:
         '''
-        with open(self.export_file,'w') as f:
+        with open(export_file or self.export_file,'w') as f:
             json.dump(self.get(), f, indent=4)
 
