@@ -5,9 +5,10 @@ import subprocess
 import sys
 
 from oslo.config import cfg
-from mapping import config
+
 from mapping.openstack import Client
 from model import Model
+
 
 # Fix setuptools' evil madness, and open up (more?) security holes
 if 'PYTHONPATH' in os.environ:
@@ -32,8 +33,11 @@ if __name__ == "__main__":
                      '"templateFile=@%s" ' \
                      'https://%s:8443/controller/nb/v2/waypoint/template' \
                      '/import' %(tenant_id, file_export, CONF.sdn_controller)
-        p = subprocess.Popen(deploy_cmd, shell=True, stdout=subprocess.PIPE,
-                             stderr=subprocess.STDOUT)
+        if tenant_id and file_export and CONF.sdn_controller:
+            p = subprocess.Popen(deploy_cmd, shell=True, stdout=subprocess.PIPE,
+                                 stderr=subprocess.STDOUT).communicate()
+            if p[1]:
+                print p[1]
     except ValueError as e:
         # Print exception
         type_, val_, trace_ = sys.exc_info()
