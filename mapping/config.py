@@ -18,6 +18,9 @@ default_opts = [
     cfg.StrOpt('policy_name',
                default='p_policy.json',
                help='name of the exported file for the policy'),
+    cfg.StrOpt('sdn_controller',
+               default='127.0.0.1',
+               help='IP address of the sdn controller'),
 ]
 cfg.CONF.register_opts(default_opts)
 
