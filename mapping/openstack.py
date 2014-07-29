@@ -14,7 +14,6 @@ class Client(object):
     def __init__(self):
         CONF = cfg.CONF
         CONF(project='heatgen')
-        self.CONF = CONF
         self.keystone = ksclient.Client(auth_url=CONF.AUTH.auth_url,
                                         username=CONF.AUTH.username,
                                         password=CONF.AUTH.password,
@@ -29,6 +28,7 @@ class Client(object):
                                        password=CONF.PROJECT.password,
                                        project_id=CONF.PROJECT.tenant_name,
                                        service_type="compute")
+        self.CONF = CONF
 
     def get_tenant_id_by_name(self, name):
         if name:

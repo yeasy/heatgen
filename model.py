@@ -9,13 +9,8 @@ from resource.middlebox import TransparentMiddleBox, RoutedMiddleBox
 from resource.policy import NodeRef, Policy, ServiceList
 from mapping.openstack import client
 
-
-# Fix setuptools' evil madness, and open up (more?) security holes
-if 'PYTHONPATH' in os.environ:
-    sys.path = os.environ['PYTHONPATH'].split(':') + sys.path
-
-
-def get_cfg_value(group,key):
+def get_cfg_value(group, key):
+    from oslo.config import cfg
     return eval("cfg.CONF.%s.%s" %(group, key))
 
 class Model(object):
@@ -28,8 +23,8 @@ class Model(object):
     #node names
         self.version = version
         self.desc = desc
-    self.src_id = client.get_network_id_by_name(src)
-    self.dst_id = client.get_network_id_by_name(dst)
+        self.src_id = client.get_network_id_by_name(src)
+        self.dst_id = client.get_network_id_by_name(dst)
         self.services = services
         self.resources = []
         self.policy_name = policy_name
