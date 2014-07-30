@@ -11,7 +11,14 @@ from mapping.openstack import client
 
 def get_cfg_value(group, key):
     from oslo.config import cfg
-    return eval("cfg.CONF.%s.%s" %(group, key))
+
+    try:
+        value = eval("cfg.CONF.%s.%s" % (group, key))
+        return value
+    except cfg.Error:
+        print "Error when parsing %s.%s from the cfg file." % (group, key)
+        return None
+
 
 class Model(object):
     """
@@ -41,6 +48,9 @@ class Model(object):
                 mb = self.gen_routed_mb(e)
             else:
                 continue
+            if not mb:
+                print "mb %s cannot generate from cfg file" % e
+                return None
             service_list.add(mb.id)
             self.resources.append(mb)
         policy = Policy('policy1',self.policy_name,NodeRef(self.src_id),NodeRef(
@@ -56,8 +66,10 @@ class Model(object):
         ingress_port = get_cfg_value(name,'ingress_port')
         egress_node = get_cfg_value(name,'egress_node')
         egress_port = get_cfg_value(name,'egress_port')
+        if not id or not service_type or not ingress_node or not ingress_port \
+                or not egress_node or not egress_port:
+            return None
         interface_type = get_cfg_value(name,'interface_type')
-
         if not interface_type:
             if ingress_node == egress_node and ingress_port == egress_port:
                 interface_type = 'one_arm'
@@ -80,10 +92,17 @@ class Model(object):
         egress_ip = egress_cidr[:egress_cidr.find('/')]
         egress_mac_addr = get_cfg_value(name, 'egress_mac_addr') or \
                           client.get_mac_by_ip(egress_ip)
-        if ingress_mac_addr == egress_mac_addr:
-            interface_type = 'one_arm'
-        else:
-            interface_type = 'two_arm'
+        if not id or not service_type or not ingress_gw_addr or not \
+                ingress_cidr or not ingress_ip or \
+                not ingress_mac_addr or not egress_gw_addr or not \
+                egress_cidr or not egress_ip or not egress_mac_addr:
+            return None
+        interface_type = get_cfg_value(name, 'interface_type')
+        if not interface_type:
+            if ingress_mac_addr == egress_mac_addr:
+                interface_type = 'one_arm'
+            else:
+                interface_type = 'two_arm'
         return RoutedMiddleBox(id, name, ingress_gw_addr, ingress_mac_addr,
                                ingress_cidr, egress_gw_addr, egress_mac_addr,
                                egress_cidr, interface_type = interface_type,

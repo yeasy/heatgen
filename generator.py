@@ -23,6 +23,9 @@ if __name__ == "__main__":
         model = Model(src=CONF.src, dst=CONF.dst, services=CONF.services,
                       policy_name=CONF.policy_name)
         template = model.get_template()
+        if not template:
+            print "Generate template file error"
+            exit(-1)
         file_export = 'p_trans_routed.json'
         print 'Export template to %s' % file_export
         template.export(file_export)
