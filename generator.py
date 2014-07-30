@@ -6,8 +6,8 @@ import sys
 
 from oslo.config import cfg
 
-from mapping.openstack import Client
 from model import Model
+from mapping.openstack import Client
 
 
 # Fix setuptools' evil madness, and open up (more?) security holes
@@ -18,7 +18,7 @@ if 'PYTHONPATH' in os.environ:
 if __name__ == "__main__":
     try:
         CONF = cfg.CONF
-        CONF(project='heatgen')
+        CONF(sys.argv[1:])
         client = Client()
         model = Model(src=CONF.src, dst=CONF.dst, services=CONF.services,
                       policy_name=CONF.policy_name)

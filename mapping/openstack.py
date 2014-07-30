@@ -1,5 +1,6 @@
 __author__ = 'baohua'
 
+import config  # noqa
 from keystoneclient.v2_0 import client as ksclient
 from neutronclient.v2_0 import client as neutron_client
 from novaclient.v3 import client as nova_client
@@ -13,7 +14,7 @@ class Client(object):
 
     def __init__(self):
         CONF = cfg.CONF
-        CONF(project='heatgen')
+        #CONF(sys.argv[1:])
         self.keystone = ksclient.Client(auth_url=CONF.AUTH.auth_url,
                                         username=CONF.AUTH.username,
                                         password=CONF.AUTH.password,
