@@ -36,7 +36,7 @@ class Model(object):
         self.resources = []
         self.policy_name = policy_name
 
-    def get_template(self):
+    def get_template(self, reverse=False):
         self.resources.append(Net(self.src_id))
         self.resources.append(Net(self.dst_id))
         service_list = ServiceList()
@@ -45,16 +45,23 @@ class Model(object):
             if mb_mode == 'transparent':
                 mb = self.gen_transparent_mb(e)
             elif mb_mode == 'routed':
-                mb = self.gen_routed_mb(e)
+                mb = self.gen_routed_mb(e,reverse)
             else:
                 continue
             if not mb:
                 print "mb %s cannot generate from cfg file" % e
                 return None
-            service_list.add(mb.id)
+            if not reverse:
+                service_list.add(mb.id)
+            else:
+                service_list.insert(0, mb.id)
             self.resources.append(mb)
-        policy = Policy('policy1',self.policy_name,NodeRef(self.src_id),NodeRef(
-            self.dst_id),service_list)
+        if not reverse:
+            policy = Policy('p_test_id',self.policy_name, NodeRef(self.src_id),
+                        NodeRef(self.dst_id), service_list)
+        else:
+            policy = Policy('p_test_id',self.policy_name+'_reverse', NodeRef(
+                self.dst_id), NodeRef(self.src_id), service_list)
         self.resources.append(policy)
         self.template = Template(resources = self.resources)
         return self.template
@@ -79,8 +86,8 @@ class Model(object):
                                     egress_node,egress_port, interface_type =\
                interface_type,service_type=service_type)
 
-    def gen_routed_mb(self, name):
-        id = get_cfg_value(name,'id')
+    def gen_routed_mb(self, name, reverse=False):
+        id = get_cfg_value(name,'id') or name
         service_type = get_cfg_value(name,'service_type')
         ingress_gw_addr = get_cfg_value(name,'ingress_gw_addr')
         ingress_cidr = get_cfg_value(name,'ingress_cidr')
@@ -103,7 +110,20 @@ class Model(object):
                 interface_type = 'one_arm'
             else:
                 interface_type = 'two_arm'
-        return RoutedMiddleBox(id, name, ingress_gw_addr, ingress_mac_addr,
-                               ingress_cidr, egress_gw_addr, egress_mac_addr,
-                               egress_cidr, interface_type = interface_type,
-                               service_type=service_type)
+        if not reverse:
+            return RoutedMiddleBox(id, name, ingress_gw_addr=ingress_gw_addr,
+                               ingress_mac_addr=ingress_mac_addr,
+                               ingress_cidr=ingress_cidr,
+                               egress_gw_addr=egress_gw_addr,
+                               egress_mac_addr=egress_mac_addr,
+                               egress_cidr=egress_cidr, interface_type =
+            interface_type, service_type=service_type)
+        else:
+            return RoutedMiddleBox(id+'_reverse', name+'_reverse',
+                                   ingress_gw_addr=egress_gw_addr,
+                                   ingress_mac_addr=egress_mac_addr,
+                                   ingress_cidr=egress_cidr,
+                                   egress_gw_addr=ingress_gw_addr,
+                                   egress_mac_addr=ingress_mac_addr,
+                                   egress_cidr=ingress_cidr, interface_type =
+                interface_type, service_type=service_type)

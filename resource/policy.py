@@ -34,7 +34,16 @@ class ServiceList(object):
             self.data.append(NodeRef(arg).get())
 
     def add(self, mb_id):
+        """
+        Add a mb at the end.
+        """
         self.data.append(NodeRef(mb_id).get())
+
+    def insert(self, pos, mb_id):
+        """
+        Insert a mb at pos.
+        """
+        self.data.insert(pos, NodeRef(mb_id).get())
 
     def get(self):
         return self.data
