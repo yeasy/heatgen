@@ -1,6 +1,7 @@
 __author__ = 'baohua'
 
 import sys
+from subprocess import Popen, PIPE
 import config  # noqa
 from keystoneclient.v2_0 import client as ksclient
 from neutronclient.v2_0 import client as neutron_client
@@ -56,6 +57,28 @@ class Client(object):
                     for fix_ip in p['fixed_ips']:
                         if fix_ip.get('ip_address') == ip:
                             return p['mac_address']
+        return None
+
+    def get_ofport_by_ip(self, ip):
+        """
+        Return the of port number by given ip by checking ovs-ofctl show br
+        :param ip:
+        :return: None if not found
+        """
+        mac = self.get_mac_by_ip(ip)
+        if not mac:
+            print 'MAC not found'
+            return None
+        result, error = Popen('ssh %s "ovs-ofctl show br-int"' %
+                              self.CONF.compute_node, stdout=PIPE,
+                              stderr=PIPE, shell=True).communicate()
+        if error:
+            return None
+        for e in result.split('\n'):
+            if mac.replace('fa:', 'fe:') in e:
+                port = e[:e.find('(')].strip()
+                if str.isdigit(port):
+                    return port
         return None
 
 

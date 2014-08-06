@@ -23,6 +23,9 @@ default_opts = [
     cfg.StrOpt('sdn_controller',
                default='127.0.0.1',
                help='IP address of the sdn controller'),
+    cfg.StrOpt('compute_node',
+               default='127.0.0.1',
+               help='IP address of the compute node'),
 ]
 cfg.CONF.register_opts(default_opts)
 
@@ -63,7 +66,7 @@ middlebox_opts = [
                help=_("fake field to get port of the transparent middlebox "
                       "instance")),
     cfg.StrOpt('ingress_port',
-               default='1',
+               default='',
                help=_("ingress switch port for the middlebox instance")),
     cfg.StrOpt('ingress_gw_addr',
                default='',
@@ -82,7 +85,7 @@ middlebox_opts = [
                default='',
                help=_("egress switch dpid for the middlebox instance")),
     cfg.StrOpt('egress_port',
-               default='2',
+               default='',
                help=_("egress switch port for the middlebox instance")),
     cfg.StrOpt('egress_gw_addr',
                default='',

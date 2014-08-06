@@ -28,10 +28,11 @@ class Model(object):
     def __init__(self, version="0.1", desc="Example", src="net1", dst="net2",
                  services=['trans_mb','routed_mb'], policy_name="testpolicy"):
     #node names
+    self.client = client
         self.version = version
         self.desc = desc
-        self.src_id = client.get_network_id_by_name(src)
-        self.dst_id = client.get_network_id_by_name(dst)
+    self.src_id = self.client.get_network_id_by_name(src)
+    self.dst_id = self.client.get_network_id_by_name(dst)
         self.services = services
         self.resources = []
         self.policy_name = policy_name
@@ -70,9 +71,13 @@ class Model(object):
         id = get_cfg_value(name,'id') or name
         service_type = get_cfg_value(name,'service_type')
         ingress_node = get_cfg_value(name,'ingress_node')
-        ingress_port = get_cfg_value(name,'ingress_port')
+        ingress_ip = get_cfg_value(name, 'ingress_ip')
+        ingress_port = get_cfg_value(name, 'ingress_port') or \
+                       self.client.get_ofport_by_ip(ingress_ip)
         egress_node = get_cfg_value(name,'egress_node')
-        egress_port = get_cfg_value(name,'egress_port')
+        egress_ip = get_cfg_value(name, 'egress_ip')
+        egress_port = get_cfg_value(name, 'egress_port') or \
+                      self.client.get_ofport_by_ip(egress_ip)
         if not id or not service_type or not ingress_node or not ingress_port \
                 or not egress_node or not egress_port:
             return None
@@ -93,12 +98,12 @@ class Model(object):
         ingress_cidr = get_cfg_value(name,'ingress_cidr')
         ingress_ip = ingress_cidr[:ingress_cidr.find('/')]
         ingress_mac_addr = get_cfg_value(name, 'ingress_mac_addr') or \
-                           client.get_mac_by_ip(ingress_ip)
+                           self.client.get_mac_by_ip(ingress_ip)
         egress_gw_addr = get_cfg_value(name,'egress_gw_addr')
         egress_cidr = get_cfg_value(name,'egress_cidr')
         egress_ip = egress_cidr[:egress_cidr.find('/')]
         egress_mac_addr = get_cfg_value(name, 'egress_mac_addr') or \
-                          client.get_mac_by_ip(egress_ip)
+                          self.client.get_mac_by_ip(egress_ip)
         if not id or not service_type or not ingress_gw_addr or not \
                 ingress_cidr or not ingress_ip or \
                 not ingress_mac_addr or not egress_gw_addr or not \
