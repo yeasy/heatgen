@@ -40,9 +40,15 @@ def deploy_template(filename):
         if p[1]:
             print p[1]
 
-def _gen_and_deploy(model, filename='policy.json', reverse=False):
+
+def _gen_and_deploy(model, filename, reverse=False):
+    if not filename:
+        return
+    filename = filename.replace(' ', '_')
     if reverse:
-        filename += '_reverse'
+        filename += '_reverse.json'
+    else:
+        filename += '.json'
     if gen_template(model, filename, reverse):
         deploy_template(filename)
         pass
@@ -51,9 +57,9 @@ def _gen_and_deploy(model, filename='policy.json', reverse=False):
 def gen_and_deploy(bidirectional=False):
     model = Model(src=CONF.src, dst=CONF.dst, services=CONF.services,
                   policy_name=CONF.policy_name)
-    _gen_and_deploy(model)
+    _gen_and_deploy(model, filename=CONF.policy_name, reverse=False)
     if bidirectional:
-        _gen_and_deploy(model,reverse=True)
+        _gen_and_deploy(model, filename=CONF.policy_name, reverse=True)
 
 # --config-dir etc
 if __name__ == "__main__":
