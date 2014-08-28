@@ -15,9 +15,13 @@ default_opts = [
     cfg.ListOpt('services',
                 default=[],
                 help='names of the service middleboxes for the policy'),
+    cfg.BoolOpt('deploy',
+                default=False,
+                help='Whether to deploy the rules after generation'),
     cfg.StrOpt('policy_name',
                default='p_policy.json',
-               help='name of the exported file for the policy'),   cfg.BoolOpt('bidirectional',
+               help='name of the exported file for the policy'),
+    cfg.BoolOpt('bidirectional',
                 default=False,
                 help=_("whether add policies in both way")),
     cfg.StrOpt('sdn_controller',
@@ -136,6 +140,9 @@ cli_opts = [
     cfg.ListOpt('services',
                default=[],
                help='names of the service middleboxes for the policy'),
+    cfg.BoolOpt('deploy',
+                default=False,
+                help='Whether to deploy the rules after generation'),
 ]
 
-# cfg.CONF.register_cli_opts(cli_opts)
+cfg.CONF.register_cli_opts(cli_opts)

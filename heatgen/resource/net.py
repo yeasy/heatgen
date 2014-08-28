@@ -1,6 +1,6 @@
 __author__ = 'baohua'
 
-from resource import Resource
+from heatgen.resource.resource import Resource
 
 class Net(Resource):
     """

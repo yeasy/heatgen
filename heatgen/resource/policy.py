@@ -1,7 +1,7 @@
 __author__ = 'baohua'
 
 import json
-from resource import Resource
+from heatgen.resource.resource import Resource
 
 
 class NodeRef(object):

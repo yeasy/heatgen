@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 __author__ = 'baohua'
 
 import os
@@ -6,8 +8,9 @@ import sys
 
 from oslo.config import cfg
 
-from model import Model
-from mapping.openstack import Client
+from heatgen import VERSION
+from heatgen.model.model import Model
+from heatgen.mapping.openstack import Client
 
 
 # Fix setuptools' evil madness, and open up (more?) security holes
@@ -19,9 +22,9 @@ CONF = cfg.CONF
 def gen_template(model, filename='policy.json', reverse=False):
     template = model.get_template(reverse)
     if not template:
-        print "Generate template file error"
+        print "Generate template file error."
         return None
-    print 'Export template to %s' % filename
+    print 'Export template to %s.' % filename
     template.export(filename)
     return True
 
@@ -41,7 +44,7 @@ def deploy_template(filename):
             print p[1]
 
 
-def _gen_and_deploy(model, filename, reverse=False):
+def _gen_and_deploy(model, filename, reverse=False,deploy=False):
     if not filename:
         return
     filename = filename.replace(' ', '_')
@@ -49,23 +52,27 @@ def _gen_and_deploy(model, filename, reverse=False):
         filename += '_reverse.json'
     else:
         filename += '.json'
-    if gen_template(model, filename, reverse):
+    if gen_template(model, filename, reverse) and deploy:
         deploy_template(filename)
-        pass
+    else:
+        print "Not Deployed."
 
 
-def gen_and_deploy(bidirectional=False):
+def gen_and_deploy(bidirectional=False,deploy=False):
     model = Model(src=CONF.src, dst=CONF.dst, services=CONF.services,
                   policy_name=CONF.policy_name)
-    _gen_and_deploy(model, filename=CONF.policy_name, reverse=False)
+    _gen_and_deploy(model, filename=CONF.policy_name, reverse=False,
+                    deploy=deploy)
     if bidirectional:
-        _gen_and_deploy(model, filename=CONF.policy_name, reverse=True)
+        _gen_and_deploy(model, filename=CONF.policy_name, reverse=True,
+                        deploy=deploy)
 
-# --config-dir etc
+
+# --config-dir /etc
 if __name__ == "__main__":
     try:
-        CONF(sys.argv[1:])
-        gen_and_deploy(CONF.bidirectional)
+        #CONF(project='heatgen', version=VERSION)
+        gen_and_deploy(CONF.bidirectional, CONF.deploy)
     except ValueError as e:
         # Print exception
         type_, val_, trace_ = sys.exc_info()

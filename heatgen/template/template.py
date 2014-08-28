@@ -1,6 +1,6 @@
 __author__ = 'baohua'
 
-import  json
+import json
 
 
 class Template(object):
@@ -8,7 +8,8 @@ class Template(object):
     Seed :The basic class for different abstract templates
     """
 
-    def __init__(self, version="0.1",desc="Example",resources={}, export_file="test_export.json"):
+    def __init__(self, version="0.1", desc="Example", resources={},
+                 export_file="test_export.json"):
         self.version = version
         self.desc = desc
         self.resources = resources #list of the resource objects

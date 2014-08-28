@@ -2,11 +2,13 @@ __author__ = 'baohua'
 
 import sys
 from subprocess import Popen, PIPE
-import config  # noqa
+
 from keystoneclient.v2_0 import client as ksclient
 from neutronclient.v2_0 import client as neutron_client
 from novaclient.v3 import client as nova_client
 from oslo.config import cfg
+
+from heatgen.util import config
 
 
 class Client(object):
@@ -16,7 +18,7 @@ class Client(object):
 
     def __init__(self):
         CONF = cfg.CONF
-        CONF(sys.argv[1:])
+        CONF(project='heatgen')
         self.keystone = ksclient.Client(auth_url=CONF.AUTH.auth_url,
                                         username=CONF.AUTH.username,
                                         password=CONF.AUTH.password,
@@ -57,6 +59,7 @@ class Client(object):
                     for fix_ip in p['fixed_ips']:
                         if fix_ip.get('ip_address') == ip:
                             return p['mac_address']
+            print 'tenant_name=%s' %self.CONF.PROJECT.tenant_name
         return None
 
     def get_ofport_by_ip(self, ip):

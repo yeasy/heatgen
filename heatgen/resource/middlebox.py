@@ -1,6 +1,6 @@
 __author__ = 'baohua'
 
-from resource import Resource
+from heatgen.resource.resource import Resource
 
 class MiddleBox(Resource):
     """
@@ -11,10 +11,12 @@ class MiddleBox(Resource):
     """
 
     def __init__(self,id,type="OS::Neutron::connectivity::service", name="trans_mb",
-                 interface_type="two_arm", service_type="firewall", ha_mode="NONE",required="yes",
+                 interface_type="two_arm", service_type="firewall",
+                 ha_mode="NONE", required="yes",
                  mode="transparent",health_check="false",**kwargs):
         super(MiddleBox,self).__init__(id,type,name=name, interface_type=interface_type, service_type=service_type,
-                                       ha_mode=ha_mode,required=required, mode=mode,health_check="false", **kwargs)
+                                       ha_mode=ha_mode, required=required,
+                                       mode=mode,health_check="false", **kwargs)
 
 
 

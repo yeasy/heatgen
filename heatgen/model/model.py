@@ -3,11 +3,12 @@ __author__ = 'baohua'
 import os
 import sys
 
-from template.template import Template
-from resource.net import Net
-from resource.middlebox import TransparentMiddleBox, RoutedMiddleBox
-from resource.policy import NodeRef, Policy, ServiceList
-from mapping.openstack import client
+from heatgen.template.template import Template
+from heatgen.resource.net import Net
+from heatgen.resource.middlebox import TransparentMiddleBox, RoutedMiddleBox
+from heatgen.resource.policy import NodeRef, Policy, ServiceList
+from heatgen.mapping.openstack import client
+from heatgen.util.log import output
 
 def get_cfg_value(group, key):
     from oslo.config import cfg
@@ -27,12 +28,11 @@ class Model(object):
 
     def __init__(self, version="0.1", desc="Example", src="net1", dst="net2",
                  services=['trans_mb','routed_mb'], policy_name="testpolicy"):
-    #node names
-    self.client = client
+        self.client = client
         self.version = version
         self.desc = desc
-    self.src_id = self.client.get_network_id_by_name(src)
-    self.dst_id = self.client.get_network_id_by_name(dst)
+        self.src_id = self.client.get_network_id_by_name(src)
+        self.dst_id = self.client.get_network_id_by_name(dst)
         self.services = services
         self.resources = []
         self.policy_name = policy_name
@@ -70,14 +70,17 @@ class Model(object):
     def gen_transparent_mb(self, name):
         id = get_cfg_value(name,'id') or name
         service_type = get_cfg_value(name,'service_type')
+        output("service_type=%s" % service_type)
         ingress_node = get_cfg_value(name,'ingress_node')
         ingress_ip = get_cfg_value(name, 'ingress_ip')
         ingress_port = get_cfg_value(name, 'ingress_port') or \
                        self.client.get_ofport_by_ip(ingress_ip)
+        output("ingress=%s %s %s" % (ingress_node, ingress_ip, ingress_port))
         egress_node = get_cfg_value(name,'egress_node')
         egress_ip = get_cfg_value(name, 'egress_ip')
         egress_port = get_cfg_value(name, 'egress_port') or \
                       self.client.get_ofport_by_ip(egress_ip)
+        output("egress=%s %s %s" % (egress_node, egress_ip, egress_port))
         if not id or not service_type or not ingress_node or not ingress_port \
                 or not egress_node or not egress_port:
             return None
