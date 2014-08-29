@@ -11,6 +11,7 @@ from oslo.config import cfg
 from heatgen import VERSION
 from heatgen.model.model import Model
 from heatgen.mapping.openstack import Client
+from heatgen.util.log import output, error
 
 
 # Fix setuptools' evil madness, and open up (more?) security holes
@@ -22,15 +23,14 @@ CONF = cfg.CONF
 def gen_template(model, filename='policy.json', reverse=False):
     template = model.get_template(reverse)
     if not template:
-        print "Generate template file error."
+        error("Generate template model failed.\n")
         return None
-    print 'Export template to %s.' % filename
+    output('Export template file to %s.\n' % filename)
     template.export(filename)
     return True
 
 def deploy_template(filename):
     client = Client()
-    print 'Deploy the generated template %s' % filename
     tenant_id = client.get_tenant_id_by_name(CONF.PROJECT.tenant_name)
     deploy_cmd = 'curl -k -u  "admin:admin" -H "multipart/form-data" -F ' \
                  '"templateName=test_template" -F "tenantId=%s" -F ' \
@@ -42,6 +42,7 @@ def deploy_template(filename):
                              stderr=subprocess.STDOUT).communicate()
         if p[1]:
             print p[1]
+    output('Deploy the generated template %s.\n' % filename)
 
 
 def _gen_and_deploy(model, filename, reverse=False,deploy=False):
@@ -54,8 +55,6 @@ def _gen_and_deploy(model, filename, reverse=False,deploy=False):
         filename += '.json'
     if gen_template(model, filename, reverse) and deploy:
         deploy_template(filename)
-    else:
-        print "Not Deployed."
 
 
 def gen_and_deploy(bidirectional=False,deploy=False):
@@ -71,7 +70,6 @@ def gen_and_deploy(bidirectional=False,deploy=False):
 # --config-dir /etc
 if __name__ == "__main__":
     try:
-        #CONF(project='heatgen', version=VERSION)
         gen_and_deploy(CONF.bidirectional, CONF.deploy)
     except ValueError as e:
         # Print exception
@@ -80,8 +78,8 @@ if __name__ == "__main__":
                      "Caught exception. Cleaning up...\n\n" +
                      "%s: %s\n" % (type_.__name__, val_) +
                      "-" * 80 + "\n")
-        print errorMsg
+        output(errorMsg)
         # Print stack trace to debug log
         import traceback
         stackTrace = traceback.format_exc()
-        print stackTrace
+        output(stackTrace)

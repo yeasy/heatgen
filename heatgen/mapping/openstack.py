@@ -8,6 +8,8 @@ from neutronclient.v2_0 import client as neutron_client
 from novaclient.v3 import client as nova_client
 from oslo.config import cfg
 
+from heatgen.util.log import info, warn
+
 from heatgen.util import config
 
 
@@ -35,6 +37,9 @@ class Client(object):
                                        service_type="compute")
         self.CONF = CONF
 
+    """
+    Get the OS tenant id by given name.
+    """
     def get_tenant_id_by_name(self, name):
         if name:
             for t in self.keystone.tenants.list():
@@ -42,6 +47,9 @@ class Client(object):
                     return t.id
         return None
 
+    """
+    Get the OS network id by given name.
+    """
     def get_network_id_by_name(self, name):
         if name:
             for t in self.neutron.list_networks().get('networks'):
@@ -49,6 +57,9 @@ class Client(object):
                     return t['id']
         return None
 
+    """
+    Get the port mac by given ip.
+    """
     def get_mac_by_ip(self, ip):
         if ip:
             # for s in self.nova.servers.list():
@@ -59,18 +70,38 @@ class Client(object):
                     for fix_ip in p['fixed_ips']:
                         if fix_ip.get('ip_address') == ip:
                             return p['mac_address']
-            print 'tenant_name=%s' %self.CONF.PROJECT.tenant_name
         return None
 
+    """
+    Get the port id by given ip.
+    """
+
+    def get_port_id_by_ip(self, ip):
+        if ip:
+            # for s in self.nova.servers.list():
+            # print s.interface_list()
+            for p in self.neutron.list_ports().get('ports'):
+                if p['tenant_id'] == self.get_tenant_id_by_name(
+                        self.CONF.PROJECT.tenant_name):
+                    for fix_ip in p['fixed_ips']:
+                        if fix_ip.get('ip_address') == ip:
+                            info('Get port id=%s for ip=%s' % (p['id'], ip))
+                            return p['id']
+        warn('Cannot get port id for ip=%s' % (ip))
+        return None
+
+    """
+    Get the of port number by given ip.
+    """
     def get_ofport_by_ip(self, ip):
         """
         Return the of port number by given ip by checking ovs-ofctl show br
         :param ip:
         :return: None if not found
         """
-        mac = self.get_mac_by_ip(ip)
-        if not mac:
-            print 'MAC not found'
+        port_id = self.get_port_id_by_ip(ip)
+        if not port_id:
+            warn('Port Id not found')
             return None
         result, error = Popen('ssh %s "ovs-ofctl show br-int"' %
                               self.CONF.compute_node, stdout=PIPE,
@@ -78,7 +109,7 @@ class Client(object):
         if error:
             return None
         for e in result.split('\n'):
-            if mac.replace('fa:', 'fe:') in e:
+            if port_id[:11] in e:
                 port = e[:e.find('(')].strip()
                 if str.isdigit(port):
                     return port
