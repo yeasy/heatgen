@@ -8,7 +8,7 @@ from heatgen.resource.net import Net
 from heatgen.resource.middlebox import TransparentMiddleBox, RoutedMiddleBox
 from heatgen.resource.policy import NodeRef, Policy, ServiceList
 from heatgen.mapping.openstack import client
-from heatgen.util.log import output
+from heatgen.util.log import info
 
 def get_cfg_value(group, key):
     from oslo.config import cfg
@@ -70,17 +70,17 @@ class Model(object):
     def gen_transparent_mb(self, name):
         id = get_cfg_value(name,'id') or name
         service_type = get_cfg_value(name,'service_type')
-        output("service_type=%s" % service_type)
         ingress_node = get_cfg_value(name,'ingress_node')
         ingress_ip = get_cfg_value(name, 'ingress_ip')
         ingress_port = get_cfg_value(name, 'ingress_port') or \
                        self.client.get_ofport_by_ip(ingress_ip)
-        output("ingress=%s %s %s" % (ingress_node, ingress_ip, ingress_port))
         egress_node = get_cfg_value(name,'egress_node')
         egress_ip = get_cfg_value(name, 'egress_ip')
         egress_port = get_cfg_value(name, 'egress_port') or \
                       self.client.get_ofport_by_ip(egress_ip)
-        output("egress=%s %s %s" % (egress_node, egress_ip, egress_port))
+        info("gen trans_mb: name=%s,service_type=%s\n" % (name, service_type))
+        info("ingress=%s,%s,%s\n" % (ingress_node, ingress_ip, ingress_port))
+        info("egress=%s %s %s\n" % (egress_node, egress_ip, egress_port))
         if not id or not service_type or not ingress_node or not ingress_port \
                 or not egress_node or not egress_port:
             return None
