@@ -108,8 +108,16 @@ function all {
     echo "Enjoy ${PROJ}!"
 }
 
+# Uninstall the package
+function uninstall {
+    echo "Uninstalling the package"
+    pushd $WORK_DIR
+    sudo make uninstall
+    popd
+}
+
 function usage {
-    printf '\nUsage: %s [-aehpsu]\n\n' $(basename $0) >&2
+    printf '\nUsage: %s [-adehpsu]\n\n' $(basename $0) >&2
 
     printf 'This install script attempts to install useful packages\n' >&2
     printf 'for ${PROJ}. It should work on Ubuntu 11.10+ or CentOS 6.5+\n' >&2
@@ -123,6 +131,7 @@ function usage {
     printf -- ' -p: install ${PROJ} de(P)endencies\n' >&2
     printf -- ' -s <dir>: place dependency (S)ource/build trees in <dir>\n' >&2
     printf -- ' -u: (U)pgrade, only install ${PROJ} core files\n' >&2
+    printf -- ' -d: (D)elete, uninstall the package\n' >&2
     exit 2
 }
 
@@ -130,10 +139,11 @@ if [ $# -eq 0 ]
 then
     all
 else
-    while getopts 'aehpsu' OPTION
+    while getopts 'adehpsu' OPTION
     do
       case $OPTION in
       a)    all;;
+      d)    uninstall;;
       e)    dev;;
       h)    usage;;
       p)    dep;;
