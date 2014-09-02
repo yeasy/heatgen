@@ -8,10 +8,10 @@ import sys
 
 from oslo.config import cfg
 
-from heatgen import VERSION
 from heatgen.model.model import Model
 from heatgen.mapping.openstack import Client
 from heatgen.util.log import output, error
+from heatgen.util import config
 
 
 # Fix setuptools' evil madness, and open up (more?) security holes
@@ -70,7 +70,10 @@ def gen_and_deploy(bidirectional=False,deploy=False):
 # --config-dir /etc
 if __name__ == "__main__":
     try:
-        gen_and_deploy(CONF.bidirectional, CONF.deploy)
+        config.init(sys.argv[1:])
+        print CONF.keys()
+        print CONF.values()
+        #gen_and_deploy(CONF.bidirectional, CONF.deploy)
     except ValueError as e:
         # Print exception
         type_, val_, trace_ = sys.exc_info()

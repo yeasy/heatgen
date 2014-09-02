@@ -35,7 +35,7 @@ default_opts = [
 cfg.CONF.register_cli_opts(default_opts)
 cfg.CONF.register_opts(default_opts)
 
-auth_opts = [
+admin_opts = [
     cfg.StrOpt('auth_url',
                default='http://127.0.0.1:5000/v2.0',
                help='authentication url in keystone'),
@@ -49,10 +49,10 @@ auth_opts = [
                default='admin',
                help='the tenant name to check'),
 ]
-cfg.CONF.register_cli_opts(auth_opts, "AUTH")
-cfg.CONF.register_cli_opts(auth_opts, "PROJECT")
-cfg.CONF.register_opts(auth_opts, "AUTH")
-cfg.CONF.register_opts(auth_opts, "PROJECT")
+cfg.CONF.register_cli_opts(admin_opts, "ADMIN")
+cfg.CONF.register_cli_opts(admin_opts, "PROJECT")
+cfg.CONF.register_opts(admin_opts, "ADMIN")
+cfg.CONF.register_opts(admin_opts, "PROJECT")
 
 trans_mb_opts = [
     cfg.StrOpt('id',

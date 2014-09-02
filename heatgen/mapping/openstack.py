@@ -20,11 +20,11 @@ class Client(object):
 
     def __init__(self):
         CONF = cfg.CONF
-        CONF(project='heatgen')
-        self.keystone = ksclient.Client(auth_url=CONF.AUTH.auth_url,
-                                        username=CONF.AUTH.username,
-                                        password=CONF.AUTH.password,
-                                        tenant_name=CONF.AUTH.tenant_name)
+        config.init(sys.argv[1:])
+        self.keystone = ksclient.Client(auth_url=CONF.ADMIN.auth_url,
+                                        username=CONF.ADMIN.username,
+                                        password=CONF.ADMIN.password,
+                                        tenant_name=CONF.ADMIN.tenant_name)
         self.auth_token = self.keystone.auth_token
         self.neutron = neutron_client.Client(auth_url=CONF.PROJECT.auth_url,
                                              username=CONF.PROJECT.username,
