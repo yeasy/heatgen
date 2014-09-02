@@ -10,11 +10,13 @@ class MiddleBox(Resource):
     {"01": {"Type": "OS::Neutron::connectivity::service", "Properties": {"name": "trans_mb", "interface_type": "two_arm", "required": "yes", "ha_mode": "NONE", "mode": "transparent", "service_type": "firewall"}}}
     """
 
-    def __init__(self,id,type="OS::Neutron::connectivity::service", name="trans_mb",
+    def __init__(self, id, type="OS::Neutron::connectivity::service",
+                 name="trans_mb",
                  interface_type="two_arm", service_type="firewall",
                  ha_mode="NONE", required="yes",
                  mode="transparent",health_check="false",**kwargs):
-        super(MiddleBox,self).__init__(id,type,name=name, interface_type=interface_type, service_type=service_type,
+        super(MiddleBox,self).__init__(id, type, name=name,
+                                       interface_type=interface_type, service_type=service_type,
                                        ha_mode=ha_mode, required=required,
                                        mode=mode,health_check="false", **kwargs)
 
