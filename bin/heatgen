@@ -71,9 +71,7 @@ def gen_and_deploy(bidirectional=False,deploy=False):
 if __name__ == "__main__":
     try:
         config.init(sys.argv[1:])
-        print CONF.keys()
-        print CONF.values()
-        #gen_and_deploy(CONF.bidirectional, CONF.deploy)
+        gen_and_deploy(CONF.bidirectional, CONF.deploy)
     except ValueError as e:
         # Print exception
         type_, val_, trace_ = sys.exc_info()
