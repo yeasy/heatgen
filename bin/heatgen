@@ -45,25 +45,25 @@ def deploy_template(filename):
     output('Deploy the generated template %s.\n' % filename)
 
 
-def _gen_and_deploy(model, filename, reverse=False,deploy=False):
-    if not filename:
+def _gen_and_deploy(model, policy_name, reverse=False,deploy=False):
+    if not policy_name:
         return
-    filename = filename.replace(' ', '_')
+    file_name = policy_name.replace(' ', '_')
     if reverse:
-        filename += '_reverse.json'
+        file_name += '_reverse.json'
     else:
-        filename += '.json'
-    if gen_template(model, filename, reverse) and deploy:
-        deploy_template(filename)
+        file_name += '.json'
+    if gen_template(model, file_name, reverse) and deploy:
+        deploy_template(file_name)
 
 
 def gen_and_deploy(bidirectional=False,deploy=False):
     model = Model(src=CONF.src, dst=CONF.dst, services=CONF.services,
                   policy_name=CONF.policy_name)
-    _gen_and_deploy(model, filename=CONF.policy_name, reverse=False,
+    _gen_and_deploy(model, policy_name=CONF.policy_name, reverse=False,
                     deploy=deploy)
     if bidirectional:
-        _gen_and_deploy(model, filename=CONF.policy_name, reverse=True,
+        _gen_and_deploy(model, policy_name=CONF.policy_name, reverse=True,
                         deploy=deploy)
 
 
