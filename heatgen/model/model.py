@@ -8,7 +8,7 @@ from heatgen.resource.net import Net
 from heatgen.resource.middlebox import TransparentMiddleBox, RoutedMiddleBox
 from heatgen.resource.policy import NodeRef, Policy, ServiceList
 from heatgen.mapping.openstack import client
-from heatgen.util.log import info
+from heatgen.util.log import info, error
 
 def get_cfg_value(group, key):
     from oslo.config import cfg
@@ -50,7 +50,7 @@ class Model(object):
             else:
                 continue
             if not mb:
-                print "mb %s cannot generate from cfg file" % e
+                error("MB %s cannot generate from cfg file\n" % e)
                 return None
             if not reverse:
                 service_list.add(mb.id)
@@ -78,11 +78,14 @@ class Model(object):
         egress_ip = get_cfg_value(name, 'egress_ip')
         egress_port = get_cfg_value(name, 'egress_port') or \
                       self.client.get_ofport_by_ip(egress_ip)
-        info("gen trans_mb: name=%s,service_type=%s\n" % (name, service_type))
-        info("ingress=%s,%s,%s\n" % (ingress_node, ingress_ip, ingress_port))
-        info("egress=%s %s %s\n" % (egress_node, egress_ip, egress_port))
         if not id or not service_type or not ingress_node or not ingress_port \
                 or not egress_node or not egress_port:
+            error("gen trans_mb: name=%s,service_type=%s\n" % (name,
+                                                             service_type))
+            error("IN(node,ip,port)=%s,%s,%s\n" % (ingress_node, ingress_ip,
+                                         ingress_port))
+            error("OUT(node,ip,port)=%s,%s,%s\n" % (egress_node, egress_ip,
+                                            egress_port))
             return None
         interface_type = get_cfg_value(name,'interface_type')
         if not interface_type:
@@ -108,9 +111,17 @@ class Model(object):
         egress_mac_addr = get_cfg_value(name, 'egress_mac_addr') or \
                           self.client.get_mac_by_ip(egress_ip)
         if not id or not service_type or not ingress_gw_addr or not \
-                ingress_cidr or not ingress_ip or \
+                ingress_cidr or \
                 not ingress_mac_addr or not egress_gw_addr or not \
-                egress_cidr or not egress_ip or not egress_mac_addr:
+                egress_cidr or not egress_mac_addr:
+            error("gen routed_mb: name=%s,service_type=%s\n" % (name,
+                                                               service_type))
+            error("IN(gw,cidr,mac)=%s,%s,%s\n" % (ingress_gw_addr,
+                                                   ingress_cidr,
+                                                   ingress_mac_addr))
+            error("OUT(node,cidr,mac)=%s,%s,%s\n" % (egress_gw_addr,
+                                                     egress_cidr,
+                                                    egress_mac_addr))
             return None
         interface_type = get_cfg_value(name, 'interface_type')
         if not interface_type:

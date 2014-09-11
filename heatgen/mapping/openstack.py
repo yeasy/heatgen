@@ -8,7 +8,7 @@ from neutronclient.v2_0 import client as neutron_client
 from novaclient.v3 import client as nova_client
 from oslo.config import cfg
 
-from heatgen.util.log import info, warn
+from heatgen.util.log import info, warn, error
 
 from heatgen.util import config
 
@@ -85,9 +85,9 @@ class Client(object):
                         self.CONF.PROJECT.tenant_name):
                     for fix_ip in p['fixed_ips']:
                         if fix_ip.get('ip_address') == ip:
-                            info('Get port id=%s for ip=%s' % (p['id'], ip))
+                            #info('Get port id=%s for ip=%s' % (p['id'], ip))
                             return p['id']
-        warn('Cannot get port id for ip=%s' % (ip))
+        warn('Cannot get port id for ip=%s\n' % (ip))
         return None
 
     """
@@ -101,18 +101,21 @@ class Client(object):
         """
         port_id = self.get_port_id_by_ip(ip)
         if not port_id:
-            warn('Port Id not found')
+            warn('Port Id not found\n')
             return None
-        result, error = Popen('ssh %s "ovs-ofctl show br-int"' %
-                              self.CONF.compute_node, stdout=PIPE,
+        cmd = 'ssh %s "ovs-ofctl show br-int"' % \
+              self.CONF.compute_node  # -t -t will force pseudo-tty
+        result, err = Popen(cmd, stdout=PIPE,
                               stderr=PIPE, shell=True).communicate()
-        if error:
+        if err:
+            error('Error to run %s, err_msg=%s' %(cmd,err))
             return None
         for e in result.split('\n'):
             if port_id[:11] in e:
                 port = e[:e.find('(')].strip()
                 if str.isdigit(port):
                     return port
+        error('Error to get port from given ip')
         return None
 
 
