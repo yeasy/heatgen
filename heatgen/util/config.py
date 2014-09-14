@@ -31,6 +31,9 @@ default_opts = [
     cfg.StrOpt('compute_node',
                default='127.0.0.1',
                help='IP address of the compute node'),
+    cfg.StrOpt('ssh_id_file',
+               default='/root/.ssh/id_rsa',
+               help='authentication file for ssh to compute node'),
 ]
 cfg.CONF.register_cli_opts(default_opts)
 cfg.CONF.register_opts(default_opts)
