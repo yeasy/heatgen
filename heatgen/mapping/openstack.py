@@ -103,7 +103,7 @@ class Client(object):
         if not port_id:
             warn('Port Id not found\n')
             return None
-        cmd = 'ssh -i root@%s %s "ovs-ofctl show br-int"' %(
+        cmd = 'sudo ssh -i %s root@%s "ovs-ofctl show br-int"' %(
             self.CONF.ssh_id_file,
             self.CONF.compute_node)  # -t -t will force pseudo-tty
         result, err = Popen(cmd, stdout=PIPE,
