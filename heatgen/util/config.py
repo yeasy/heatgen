@@ -153,6 +153,10 @@ cfg.CONF.register_cli_opts(trans_mb_opts, 'trans_mb')
 cfg.CONF.register_opts(trans_mb_opts, 'trans_mb')
 cfg.CONF.register_cli_opts(routed_mb_opts, 'routed_mb')
 cfg.CONF.register_opts(routed_mb_opts, 'routed_mb')
+cfg.CONF.register_cli_opts(routed_mb_opts, 'routed_mb1')
+cfg.CONF.register_opts(routed_mb_opts, 'routed_mb1')
+cfg.CONF.register_cli_opts(routed_mb_opts, 'routed_mb2')
+cfg.CONF.register_opts(routed_mb_opts, 'routed_mb2')
 
 def init(args, **kwargs):
     cfg.CONF(args=args, project='heatgen',
